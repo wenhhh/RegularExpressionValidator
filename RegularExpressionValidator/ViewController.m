@@ -35,18 +35,36 @@
 - (IBAction)matchButton:(id)sender {
     NSString *sourceString = self.sourceTextView.string;
     NSString *expressionString = self.expressionTextView.string;
-    NSRange matchRange = [sourceString rangeOfString:expressionString options:NSRegularExpressionSearch];
-    if (NSNotFound != matchRange.location) {
-        NSString *resultString = [sourceString substringWithRange:matchRange];
-        if (resultString) {
-            self.resultTextView.string = resultString;
+    
+    NSArray *matchArray = [NSArray array];
+    NSMutableArray *resultArr = [NSMutableArray array];
+    NSError *error = NULL;
+    NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:expressionString options:NSRegularExpressionCaseInsensitive error:&error];
+    matchArray = [regex matchesInString:sourceString options:(NSMatchingReportProgress) range:NSMakeRange(0, sourceString.length)];
+    NSUInteger lastIdx = 0;
+    for (NSTextCheckingResult *result in matchArray) {
+        NSRange currentRange = result.range;
+        if (currentRange.location >= lastIdx) {
+            NSString *tempStr = [sourceString substringWithRange:currentRange];
+            [resultArr addObject:tempStr];
         }
-        else {
-            self.resultTextView.string = @"(没有匹配)";
-        }
+        lastIdx = currentRange.location + currentRange.length;
+    }
+    
+    if (resultArr.count <= 0) {
+        [self insertTextToResult:@"(没有匹配)"];
     }
     else {
-        self.resultTextView.string = @"(没有匹配)";
+        __block NSMutableString *resultMutableText=[NSMutableString string];
+        [resultArr enumerateObjectsUsingBlock:^(NSString *obj, NSUInteger idx, BOOL * _Nonnull stop) {
+            [resultMutableText appendFormat:@"%@\n",obj];
+        }];
+        [self insertTextToResult:resultMutableText];
     }
+}
+
+- (void)insertTextToResult:(NSString *)text {
+    [self.resultTextView insertText:@"" replacementRange:NSMakeRange(0, self.resultTextView.string.length)];
+    self.resultTextView.string = text;
 }
 @end
