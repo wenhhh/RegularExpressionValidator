@@ -52,7 +52,7 @@
     }
     
     if (resultArr.count <= 0) {
-        [self insertTextToResult:@"(没有匹配)"];
+        [self insertTextToResult:@"(No match!)"];
     }
     else {
         __block NSMutableString *resultMutableText=[NSMutableString string];
