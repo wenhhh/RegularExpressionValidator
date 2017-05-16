@@ -20,7 +20,9 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-
+    self.sourceTextView.automaticQuoteSubstitutionEnabled = NO;
+    self.expressionTextView.automaticQuoteSubstitutionEnabled = NO;
+    self.resultTextView.automaticQuoteSubstitutionEnabled = NO;
     // Do any additional setup after loading the view.
 }
 
